@@ -59,6 +59,7 @@ class ClientSettings {
   final TlsSettings? tlsSettings;
   final DnsSettings? dnsSettings;
   final String? userAgent;
+  final List<TlsPin>? tlsPins;
 
   const ClientSettings({
     this.cookieSettings,
@@ -70,6 +71,7 @@ class ClientSettings {
     this.tlsSettings,
     this.dnsSettings,
     this.userAgent,
+    this.tlsPins,
   });
 
   static Future<ClientSettings> default_() =>
@@ -86,6 +88,7 @@ class ClientSettings {
       tlsSettings.hashCode ^
       dnsSettings.hashCode ^
       userAgent.hashCode;
+      tlsPins.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -100,7 +103,8 @@ class ClientSettings {
           redirectSettings == other.redirectSettings &&
           tlsSettings == other.tlsSettings &&
           dnsSettings == other.dnsSettings &&
-          userAgent == other.userAgent;
+          userAgent == other.userAgent &&
+          tlsPins == other.tlsPins;
 }
 
 class CookieSettings {
@@ -219,6 +223,31 @@ class TimeoutSettings {
           connectTimeout == other.connectTimeout &&
           keepAliveTimeout == other.keepAliveTimeout &&
           keepAlivePing == other.keepAlivePing;
+}
+
+class TlsPin {
+  final List<String> domains;
+  final String spkiS256;
+  final BigInt? expiration;
+
+  const TlsPin({
+    required this.domains,
+    required this.spkiS256,
+    this.expiration,
+  });
+
+  @override
+  int get hashCode =>
+      domains.hashCode ^ spkiS256.hashCode ^ expiration.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TlsPin &&
+          runtimeType == other.runtimeType &&
+          domains == other.domains &&
+          spkiS256 == other.spkiS256 &&
+          expiration == other.expiration;
 }
 
 class TlsSettings {

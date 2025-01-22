@@ -131,6 +131,30 @@ class RhttpUnknownException extends RhttpException {
   String toString() => '[$runtimeType] $message';
 }
 
+class RhttpInvalidPeerCertificateException extends RhttpException {
+  const RhttpInvalidPeerCertificateException(super.request);
+
+  @override
+  String toString() =>
+      '[$runtimeType] Invalid Peer Certificate, URL: ${request.url}';
+}
+
+class RhttpNoTlsInfoFoundException extends RhttpException {
+  const RhttpNoTlsInfoFoundException(super.request);
+
+  @override
+  String toString() =>
+      '[$runtimeType] TLS Info is not found in the response, URL: ${request.url}';
+}
+
+class RhttpParsingPeerCertificateError extends RhttpException {
+  const RhttpParsingPeerCertificateError(super.request);
+
+  @override
+  String toString() =>
+      '[$runtimeType] Failed to pares peer certificate, URL: ${request.url}';
+}
+
 @internal
 RhttpException parseError(HttpRequest request, rust.RhttpError error) {
   return error.when(
@@ -152,5 +176,10 @@ RhttpException parseError(HttpRequest request, rust.RhttpError error) {
     rhttpConnectionError: (message) =>
         RhttpConnectionException(request, message),
     rhttpUnknownError: (message) => RhttpUnknownException(request, message),
+    rhttpInvalidPeerCertificateError: () =>
+        RhttpInvalidPeerCertificateException(request),
+    rhttpNoTlsInfoFoundError: () => RhttpNoTlsInfoFoundException(request),
+    rhttpParsingPeerCertificateError: () =>
+        RhttpParsingPeerCertificateError(request),
   );
 }

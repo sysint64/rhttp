@@ -1,12 +1,16 @@
+use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine as _};
 use flutter_rust_bridge::for_generated::anyhow;
 use flutter_rust_bridge::{frb, DartFnFuture};
 use futures_util::StreamExt;
 use reqwest::header::{HeaderName, HeaderValue};
+use reqwest::tls::TlsInfo;
 use reqwest::{Method, Response, Url, Version};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::error::Error;
 use std::str::FromStr;
 use tokio_util::sync::CancellationToken;
+use x509_parser::prelude::{FromDer, GeneralName, X509Certificate};
 
 use crate::api::client::{ClientSettings, RequestClient};
 use crate::api::error::RhttpError;
@@ -124,6 +128,7 @@ pub fn cancel_running_requests(client: &RequestClient) {
     client.cancel_token.cancel();
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn make_http_request(
     client: Option<RustAutoOpaque<RequestClient>>,
     settings: Option<ClientSettings>,
@@ -166,11 +171,9 @@ struct RequestCancelTokens {
 }
 
 fn build_cancel_tokens(client: Option<RustAutoOpaque<RequestClient>>) -> RequestCancelTokens {
-    let client_cancel_token = match client {
-        Some(client) => Some(client.try_read().unwrap().cancel_token.clone()),
-        None => None,
-    }
-    .unwrap_or_else(|| CancellationToken::new());
+    let client_cancel_token = client
+        .map(|client| client.try_read().unwrap().cancel_token.clone())
+        .unwrap_or_default();
 
     RequestCancelTokens {
         request_cancel_token: CancellationToken::new(),
@@ -178,6 +181,7 @@ fn build_cancel_tokens(client: Option<RustAutoOpaque<RequestClient>>) -> Request
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn make_http_request_inner(
     client: Option<RustAutoOpaque<RequestClient>>,
     settings: Option<ClientSettings>,
@@ -224,6 +228,7 @@ async fn make_http_request_inner(
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn make_http_request_receive_stream(
     client: Option<RustAutoOpaque<RequestClient>>,
     settings: Option<ClientSettings>,
@@ -270,6 +275,7 @@ pub async fn make_http_request_receive_stream(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn make_http_request_receive_stream_inner(
     client: Option<RustAutoOpaque<RequestClient>>,
     settings: Option<ClientSettings>,
@@ -335,6 +341,7 @@ async fn make_http_request_receive_stream_inner(
 }
 
 /// This function is used to make an HTTP request without any response handling.
+#[allow(clippy::too_many_arguments)]
 async fn make_http_request_helper(
     client: Option<RustAutoOpaque<RequestClient>>,
     settings: Option<ClientSettings>,
@@ -402,7 +409,7 @@ async fn make_http_request_helper(
                 let stream = body_stream
                     .expect("body_stream should exist for HttpBody::BytesStream")
                     .receiver
-                    .map(|v| Ok::<Vec<u8>, RhttpError>(v));
+                    .map(Ok::<Vec<u8>, RhttpError>);
 
                 let body = reqwest::Body::wrap_stream(stream);
                 request.body(body)
@@ -473,6 +480,83 @@ async fn make_http_request_helper(
             }
         }
     })?;
+
+    if let Some(tls_pins) = client.tls_pins {
+        if let Some(tls_info) = response.extensions().get::<TlsInfo>() {
+            if let Some(cert) = tls_info.peer_certificate() {
+                match X509Certificate::from_der(cert) {
+                    Ok((_, cert)) => {
+                        let mut domains = vec![];
+
+                        // Get the Common Name from the Subject
+                        if let Some(cn) = cert.subject().iter_common_name().next() {
+                            if let Ok(cn_str) = cn.as_str() {
+                                domains.push(cn_str.to_string());
+                            }
+                        }
+
+                        // Get Subject Alternative Names (SANs)
+                        if let Ok(Some(sans)) = cert.subject_alternative_name() {
+                            for name in sans.value.general_names.iter() {
+                                match name {
+                                    GeneralName::DNSName(dns_name) => {
+                                        domains.push(dns_name.to_string());
+                                    }
+                                    GeneralName::IPAddress(ip) => {
+                                        domains.push(String::from_utf8_lossy(ip).to_string());
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+
+                        // Get spki_s256
+                        let mut hasher = Sha256::new();
+                        hasher.update(cert.subject_pki.raw);
+                        let hash = hasher.finalize();
+                        let spki_s256 = STANDARD_NO_PAD.encode(hash);
+
+                        // Looking for a pin
+                        let mut found_pin = false;
+
+                        for pin in tls_pins {
+                            let mut found_domain = false;
+
+                            for domain in domains.iter() {
+                                if pin.domains.contains(domain) {
+                                    found_domain = true;
+                                    break;
+                                }
+                            }
+
+                            if !found_domain {
+                                continue;
+                            }
+
+                            if pin.spki_s256 == spki_s256 {
+                                found_pin = true;
+
+                                if let Some(expiration) = pin.expiration {
+                                    if cert.validity().not_after.timestamp() != expiration as i64 {
+                                        return Err(RhttpError::RhttpInvalidPeerCertificateError);
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+
+                        if !found_pin {
+                            return Err(RhttpError::RhttpInvalidPeerCertificateError);
+                        }
+                    }
+                    Err(_) => return Err(RhttpError::RhttpParsingPeerCertificateError),
+                }
+            }
+        } else {
+            return Err(RhttpError::RhttpNoTlsInfoFoundError);
+        }
+    }
 
     if client.throw_on_status_code {
         let status = response.status();

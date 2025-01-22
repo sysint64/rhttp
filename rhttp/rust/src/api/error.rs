@@ -8,6 +8,9 @@ pub enum RhttpError {
     RhttpRedirectError,
     RhttpStatusCodeError(u16, Vec<(String, String)>, HttpResponseBody),
     RhttpInvalidCertificateError(String),
+    RhttpInvalidPeerCertificateError,
+    RhttpNoTlsInfoFoundError,
+    RhttpParsingPeerCertificateError,
     RhttpConnectionError(String),
     RhttpUnknownError(String),
 }
@@ -29,6 +32,13 @@ impl Display for RhttpError {
             }
             RhttpError::RhttpConnectionError(e) => write!(f, "RhttpConnectionError: {e}"),
             RhttpError::RhttpUnknownError(e) => write!(f, "{}", e),
+            RhttpError::RhttpInvalidPeerCertificateError => {
+                write!(f, "RhttpInvalidPeerCertificateError")
+            }
+            RhttpError::RhttpNoTlsInfoFoundError => write!(f, "RhttpNoTlsInfoFoundError"),
+            RhttpError::RhttpParsingPeerCertificateError => {
+                write!(f, "RhttpParsingPeerCertificateError")
+            }
         }
     }
 }

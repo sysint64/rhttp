@@ -20,6 +20,7 @@ pub struct ClientSettings {
     pub redirect_settings: Option<RedirectSettings>,
     pub tls_settings: Option<TlsSettings>,
     pub dns_settings: Option<DnsSettings>,
+    pub tls_pins: Option<Vec<TlsPin>>,
     pub user_agent: Option<String>,
 }
 
@@ -53,6 +54,13 @@ pub struct TimeoutSettings {
     pub connect_timeout: Option<Duration>,
     pub keep_alive_timeout: Option<Duration>,
     pub keep_alive_ping: Option<Duration>,
+}
+
+#[derive(Clone, Debug)]
+pub struct TlsPin {
+    pub domains: Vec<String>,
+    pub spki_s256: String,
+    pub expiration: Option<u64>,
 }
 
 pub struct TlsSettings {
@@ -102,6 +110,7 @@ impl Default for ClientSettings {
             tls_settings: None,
             dns_settings: None,
             user_agent: None,
+            tls_pins: None,
         }
     }
 }
@@ -111,6 +120,7 @@ pub struct RequestClient {
     pub(crate) client: reqwest::Client,
     pub(crate) http_version_pref: HttpVersionPref,
     pub(crate) throw_on_status_code: bool,
+    pub(crate) tls_pins: Option<Vec<TlsPin>>,
 
     /// A token that can be used to cancel all requests made by this client.
     pub(crate) cancel_token: CancellationToken,
@@ -195,6 +205,10 @@ fn create_client(settings: ClientSettings) -> Result<RequestClient, RhttpError> 
                         .map_err(|e| RhttpError::RhttpUnknownError(e.to_string()))?,
                 );
             }
+        }
+
+        if settings.tls_pins.is_some() {
+            client = client.tls_info(true);
         }
 
         if let Some(tls_settings) = settings.tls_settings {
@@ -307,6 +321,7 @@ fn create_client(settings: ClientSettings) -> Result<RequestClient, RhttpError> 
         client,
         http_version_pref: settings.http_version_pref,
         throw_on_status_code: settings.throw_on_status_code,
+        tls_pins: settings.tls_pins,
         cancel_token: CancellationToken::new(),
     })
 }

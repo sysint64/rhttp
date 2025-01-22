@@ -215,6 +215,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TlsVersion dco_decode_box_autoadd_tls_version(dynamic raw);
 
   @protected
+  BigInt dco_decode_box_autoadd_u_64(dynamic raw);
+
+  @protected
   ClientCertificate dco_decode_client_certificate(dynamic raw);
 
   @protected
@@ -286,6 +289,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<(String, String)> dco_decode_list_record_string_string(dynamic raw);
 
   @protected
+  List<TlsPin> dco_decode_list_tls_pin(dynamic raw);
+
+  @protected
   MultipartItem dco_decode_multipart_item(dynamic raw);
 
   @protected
@@ -346,7 +352,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TlsVersion? dco_decode_opt_box_autoadd_tls_version(dynamic raw);
 
   @protected
+  BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
+
+  @protected
   List<(String, String)>? dco_decode_opt_list_record_string_string(dynamic raw);
+
+  @protected
+  List<TlsPin>? dco_decode_opt_list_tls_pin(dynamic raw);
 
   @protected
   ProxyCondition dco_decode_proxy_condition(dynamic raw);
@@ -383,6 +395,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TimeoutSettings dco_decode_timeout_settings(dynamic raw);
 
   @protected
+  TlsPin dco_decode_tls_pin(dynamic raw);
+
+  @protected
   TlsSettings dco_decode_tls_settings(dynamic raw);
 
   @protected
@@ -390,6 +405,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int dco_decode_u_16(dynamic raw);
+
+  @protected
+  BigInt dco_decode_u_64(dynamic raw);
 
   @protected
   int dco_decode_u_8(dynamic raw);
@@ -562,6 +580,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TlsVersion sse_decode_box_autoadd_tls_version(SseDeserializer deserializer);
 
   @protected
+  BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
   ClientCertificate sse_decode_client_certificate(SseDeserializer deserializer);
 
   @protected
@@ -635,6 +656,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  List<TlsPin> sse_decode_list_tls_pin(SseDeserializer deserializer);
+
+  @protected
   MultipartItem sse_decode_multipart_item(SseDeserializer deserializer);
 
   @protected
@@ -705,8 +729,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
   List<(String, String)>? sse_decode_opt_list_record_string_string(
       SseDeserializer deserializer);
+
+  @protected
+  List<TlsPin>? sse_decode_opt_list_tls_pin(SseDeserializer deserializer);
 
   @protected
   ProxyCondition sse_decode_proxy_condition(SseDeserializer deserializer);
@@ -747,6 +777,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TimeoutSettings sse_decode_timeout_settings(SseDeserializer deserializer);
 
   @protected
+  TlsPin sse_decode_tls_pin(SseDeserializer deserializer);
+
+  @protected
   TlsSettings sse_decode_tls_settings(SseDeserializer deserializer);
 
   @protected
@@ -754,6 +787,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   int sse_decode_u_16(SseDeserializer deserializer);
+
+  @protected
+  BigInt sse_decode_u_64(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_8(SseDeserializer deserializer);
@@ -951,6 +987,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       TlsVersion self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
+
+  @protected
   void sse_encode_client_certificate(
       ClientCertificate self, SseSerializer serializer);
 
@@ -1032,6 +1071,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       List<(String, String)> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_tls_pin(List<TlsPin> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_multipart_item(MultipartItem self, SseSerializer serializer);
 
   @protected
@@ -1105,8 +1147,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       TlsVersion? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
+
+  @protected
   void sse_encode_opt_list_record_string_string(
       List<(String, String)>? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_list_tls_pin(
+      List<TlsPin>? self, SseSerializer serializer);
 
   @protected
   void sse_encode_proxy_condition(
@@ -1149,6 +1198,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       TimeoutSettings self, SseSerializer serializer);
 
   @protected
+  void sse_encode_tls_pin(TlsPin self, SseSerializer serializer);
+
+  @protected
   void sse_encode_tls_settings(TlsSettings self, SseSerializer serializer);
 
   @protected
@@ -1156,6 +1208,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_u_16(int self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_u_64(BigInt self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_8(int self, SseSerializer serializer);

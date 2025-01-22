@@ -7,6 +7,7 @@ import 'package:rhttp/src/rust/api/client.dart' as rust_client;
 import 'package:rhttp/src/rust/api/http.dart' as rust;
 
 export 'package:rhttp/src/rust/api/client.dart' show TlsVersion;
+export 'package:rhttp/src/rust/api/client.dart' show TlsPin;
 
 const _keepBaseUrl = '__rhttp_keep__';
 const _keepCookieSettings = CookieSettings.none();
@@ -15,6 +16,7 @@ const _keepRedirectSettings = RedirectSettings.limited(-9999);
 const _keepTlsSettings = TlsSettings();
 const _keepDnsSettings = DnsSettings.static();
 const _keepTimeoutSettings = TimeoutSettings();
+const _keepTlsPinsSettings = <rust_client.TlsPin>[];
 const _keepUserAgent = '__rhttp_keep__';
 
 class ClientSettings {
@@ -51,6 +53,8 @@ class ClientSettings {
   /// By default, there is no User-Agent header.
   final String? userAgent;
 
+  final List<rust_client.TlsPin>? tlsPins;
+
   const ClientSettings({
     this.baseUrl,
     this.cookieSettings,
@@ -62,6 +66,7 @@ class ClientSettings {
     this.tlsSettings,
     this.dnsSettings,
     this.userAgent,
+    this.tlsPins,
   });
 
   ClientSettings copyWith({
@@ -75,6 +80,7 @@ class ClientSettings {
     TlsSettings? tlsSettings = _keepTlsSettings,
     DnsSettings? dnsSettings = _keepDnsSettings,
     String? userAgent = _keepUserAgent,
+    List<rust_client.TlsPin>? tlsPins = _keepTlsPinsSettings,
   }) {
     return ClientSettings(
       baseUrl: identical(baseUrl, _keepBaseUrl) ? this.baseUrl : baseUrl,
@@ -100,6 +106,8 @@ class ClientSettings {
           : dnsSettings,
       userAgent:
           identical(userAgent, _keepUserAgent) ? this.userAgent : userAgent,
+      tlsPins:
+          identical(tlsPins, _keepTlsPinsSettings) ? this.tlsPins : tlsPins,
     );
   }
 }
@@ -380,6 +388,7 @@ extension ClientSettingsExt on ClientSettings {
       tlsSettings: tlsSettings?._toRustType(),
       dnsSettings: dnsSettings?._toRustType(),
       userAgent: userAgent,
+      tlsPins: tlsPins,
     );
   }
 }
