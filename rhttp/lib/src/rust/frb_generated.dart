@@ -1103,6 +1103,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BigInt dco_decode_box_autoadd_u_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_u_64(raw);
+  }
+
+  @protected
   ClientCertificate dco_decode_client_certificate(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1118,8 +1124,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ClientSettings dco_decode_client_settings(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 7)
-      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return ClientSettings(
       httpVersionPref: dco_decode_http_version_pref(arr[0]),
       timeoutSettings: dco_decode_opt_box_autoadd_timeout_settings(arr[1]),
@@ -1130,6 +1136,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       dnsSettings:
           dco_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDnsSettings(
               arr[6]),
+      tlsPins: dco_decode_opt_list_tls_pin(arr[7]),
     );
   }
 
@@ -1319,6 +1326,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<TlsPin> dco_decode_list_tls_pin(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_tls_pin).toList();
+  }
+
+  @protected
   MultipartItem dco_decode_multipart_item(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1464,10 +1477,22 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_u_64(raw);
+  }
+
+  @protected
   List<(String, String)>? dco_decode_opt_list_record_string_string(
       dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_list_record_string_string(raw);
+  }
+
+  @protected
+  List<TlsPin>? dco_decode_opt_list_tls_pin(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_list_tls_pin(raw);
   }
 
   @protected
@@ -1585,10 +1610,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           dco_decode_String(raw[1]),
         );
       case 5:
+        return RhttpError_RhttpInvalidPeerCertificateError();
+      case 6:
+        return RhttpError_RhttpNoTlsInfoFoundError();
+      case 7:
+        return RhttpError_RhttpParsingPeerCertificateError();
+      case 8:
         return RhttpError_RhttpConnectionError(
           dco_decode_String(raw[1]),
         );
-      case 6:
+      case 9:
         return RhttpError_RhttpUnknownError(
           dco_decode_String(raw[1]),
         );
@@ -1624,6 +1655,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TlsPin dco_decode_tls_pin(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return TlsPin(
+      domains: dco_decode_list_String(arr[0]),
+      spkiS256: dco_decode_String(arr[1]),
+      expiration: dco_decode_opt_box_autoadd_u_64(arr[2]),
+    );
+  }
+
+  @protected
   TlsSettings dco_decode_tls_settings(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -1650,6 +1694,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   int dco_decode_u_16(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
+  }
+
+  @protected
+  BigInt dco_decode_u_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeU64(raw);
   }
 
   @protected
@@ -1963,6 +2013,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_u_64(deserializer));
+  }
+
+  @protected
   ClientCertificate sse_decode_client_certificate(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -1987,6 +2043,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_dnsSettings =
         sse_decode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDnsSettings(
             deserializer);
+    var var_tlsPins = sse_decode_opt_list_tls_pin(deserializer);
     return ClientSettings(
         httpVersionPref: var_httpVersionPref,
         timeoutSettings: var_timeoutSettings,
@@ -1994,7 +2051,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         proxySettings: var_proxySettings,
         redirectSettings: var_redirectSettings,
         tlsSettings: var_tlsSettings,
-        dnsSettings: var_dnsSettings);
+        dnsSettings: var_dnsSettings,
+        tlsPins: var_tlsPins);
   }
 
   @protected
@@ -2217,6 +2275,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<TlsPin> sse_decode_list_tls_pin(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <TlsPin>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_tls_pin(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   MultipartItem sse_decode_multipart_item(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_value = sse_decode_multipart_value(deserializer);
@@ -2426,12 +2496,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_u_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   List<(String, String)>? sse_decode_opt_list_record_string_string(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
       return (sse_decode_list_record_string_string(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  List<TlsPin>? sse_decode_opt_list_tls_pin(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_list_tls_pin(deserializer));
     } else {
       return null;
     }
@@ -2542,9 +2634,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_field0 = sse_decode_String(deserializer);
         return RhttpError_RhttpInvalidCertificateError(var_field0);
       case 5:
+        return RhttpError_RhttpInvalidPeerCertificateError();
+      case 6:
+        return RhttpError_RhttpNoTlsInfoFoundError();
+      case 7:
+        return RhttpError_RhttpParsingPeerCertificateError();
+      case 8:
         var var_field0 = sse_decode_String(deserializer);
         return RhttpError_RhttpConnectionError(var_field0);
-      case 6:
+      case 9:
         var var_field0 = sse_decode_String(deserializer);
         return RhttpError_RhttpUnknownError(var_field0);
       default:
@@ -2576,6 +2674,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         connectTimeout: var_connectTimeout,
         keepAliveTimeout: var_keepAliveTimeout,
         keepAlivePing: var_keepAlivePing);
+  }
+
+  @protected
+  TlsPin sse_decode_tls_pin(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_domains = sse_decode_list_String(deserializer);
+    var var_spkiS256 = sse_decode_String(deserializer);
+    var var_expiration = sse_decode_opt_box_autoadd_u_64(deserializer);
+    return TlsPin(
+        domains: var_domains,
+        spkiS256: var_spkiS256,
+        expiration: var_expiration);
   }
 
   @protected
@@ -2613,6 +2723,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   int sse_decode_u_16(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint16();
+  }
+
+  @protected
+  BigInt sse_decode_u_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getBigUint64();
   }
 
   @protected
@@ -2981,6 +3097,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_u_64(self, serializer);
+  }
+
+  @protected
   void sse_encode_client_certificate(
       ClientCertificate self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3002,6 +3124,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_tls_settings(self.tlsSettings, serializer);
     sse_encode_opt_box_autoadd_Auto_Owned_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerDnsSettings(
         self.dnsSettings, serializer);
+    sse_encode_opt_list_tls_pin(self.tlsPins, serializer);
   }
 
   @protected
@@ -3187,6 +3310,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_record_string_string(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_tls_pin(List<TlsPin> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_tls_pin(item, serializer);
     }
   }
 
@@ -3382,6 +3514,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_u_64(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_list_record_string_string(
       List<(String, String)>? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -3389,6 +3531,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_bool(self != null, serializer);
     if (self != null) {
       sse_encode_list_record_string_string(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_list_tls_pin(
+      List<TlsPin>? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_list_tls_pin(self, serializer);
     }
   }
 
@@ -3482,11 +3635,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case RhttpError_RhttpInvalidCertificateError(field0: final field0):
         sse_encode_i_32(4, serializer);
         sse_encode_String(field0, serializer);
-      case RhttpError_RhttpConnectionError(field0: final field0):
+      case RhttpError_RhttpInvalidPeerCertificateError():
         sse_encode_i_32(5, serializer);
+      case RhttpError_RhttpNoTlsInfoFoundError():
+        sse_encode_i_32(6, serializer);
+      case RhttpError_RhttpParsingPeerCertificateError():
+        sse_encode_i_32(7, serializer);
+      case RhttpError_RhttpConnectionError(field0: final field0):
+        sse_encode_i_32(8, serializer);
         sse_encode_String(field0, serializer);
       case RhttpError_RhttpUnknownError(field0: final field0):
-        sse_encode_i_32(6, serializer);
+        sse_encode_i_32(9, serializer);
         sse_encode_String(field0, serializer);
     }
   }
@@ -3508,6 +3667,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_Chrono_Duration(
         self.keepAliveTimeout, serializer);
     sse_encode_opt_box_autoadd_Chrono_Duration(self.keepAlivePing, serializer);
+  }
+
+  @protected
+  void sse_encode_tls_pin(TlsPin self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_list_String(self.domains, serializer);
+    sse_encode_String(self.spkiS256, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.expiration, serializer);
   }
 
   @protected
@@ -3534,6 +3701,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_u_16(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint16(self);
+  }
+
+  @protected
+  void sse_encode_u_64(BigInt self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putBigUint64(self);
   }
 
   @protected

@@ -7,6 +7,7 @@ import 'package:rhttp/src/rust/api/client.dart' as rust_client;
 import 'package:rhttp/src/rust/api/http.dart' as rust;
 
 export 'package:rhttp/src/rust/api/client.dart' show TlsVersion;
+export 'package:rhttp/src/rust/api/client.dart' show TlsPin;
 
 const _keepBaseUrl = '__rhttp_keep__';
 const _keepProxySettings = ProxySettings.noProxy();
@@ -14,6 +15,7 @@ const _keepRedirectSettings = RedirectSettings.limited(-9999);
 const _keepTlsSettings = TlsSettings();
 const _keepDnsSettings = DnsSettings.static();
 const _keepTimeoutSettings = TimeoutSettings();
+const _keepTlsPinsSettings = <rust_client.TlsPin>[];
 
 class ClientSettings {
   /// Base URL to be prefixed to all requests.
@@ -42,6 +44,8 @@ class ClientSettings {
   /// DNS settings and resolver overrides.
   final DnsSettings? dnsSettings;
 
+  final List<rust_client.TlsPin>? tlsPins;
+
   const ClientSettings({
     this.baseUrl,
     this.httpVersionPref = HttpVersionPref.all,
@@ -51,6 +55,7 @@ class ClientSettings {
     this.redirectSettings,
     this.tlsSettings,
     this.dnsSettings,
+    this.tlsPins,
   });
 
   ClientSettings copyWith({
@@ -62,6 +67,7 @@ class ClientSettings {
     RedirectSettings? redirectSettings = _keepRedirectSettings,
     TlsSettings? tlsSettings = _keepTlsSettings,
     DnsSettings? dnsSettings = _keepDnsSettings,
+    List<rust_client.TlsPin>? tlsPins = _keepTlsPinsSettings,
   }) {
     return ClientSettings(
       baseUrl: identical(baseUrl, _keepBaseUrl) ? this.baseUrl : baseUrl,
@@ -82,6 +88,8 @@ class ClientSettings {
       dnsSettings: identical(dnsSettings, _keepDnsSettings)
           ? this.dnsSettings
           : dnsSettings,
+      tlsPins:
+          identical(tlsPins, _keepTlsPinsSettings) ? this.tlsPins : tlsPins,
     );
   }
 }
@@ -333,6 +341,7 @@ extension ClientSettingsExt on ClientSettings {
       redirectSettings: redirectSettings?._toRustType(),
       tlsSettings: tlsSettings?._toRustType(),
       dnsSettings: dnsSettings?._toRustType(),
+      tlsPins: tlsPins,
     );
   }
 }

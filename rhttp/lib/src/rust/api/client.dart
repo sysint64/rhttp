@@ -11,7 +11,7 @@ part 'client.freezed.dart';
 
 // These functions are ignored because they are not marked as `pub`: `create_client`, `new_default`, `new`
 // These types are ignored because they are not used by any `pub` functions: `DynamicDnsSettings`, `DynamicResolver`, `StaticResolver`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `resolve`, `resolve`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `resolve`, `resolve`
 
 DnsSettings createStaticResolverSync({required StaticDnsSettings settings}) =>
     RustLib.instance.api
@@ -57,6 +57,7 @@ class ClientSettings {
   final RedirectSettings? redirectSettings;
   final TlsSettings? tlsSettings;
   final DnsSettings? dnsSettings;
+  final List<TlsPin>? tlsPins;
 
   const ClientSettings({
     required this.httpVersionPref,
@@ -66,6 +67,7 @@ class ClientSettings {
     this.redirectSettings,
     this.tlsSettings,
     this.dnsSettings,
+    this.tlsPins,
   });
 
   static Future<ClientSettings> default_() =>
@@ -79,7 +81,8 @@ class ClientSettings {
       proxySettings.hashCode ^
       redirectSettings.hashCode ^
       tlsSettings.hashCode ^
-      dnsSettings.hashCode;
+      dnsSettings.hashCode ^
+      tlsPins.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -92,7 +95,8 @@ class ClientSettings {
           proxySettings == other.proxySettings &&
           redirectSettings == other.redirectSettings &&
           tlsSettings == other.tlsSettings &&
-          dnsSettings == other.dnsSettings;
+          dnsSettings == other.dnsSettings &&
+          tlsPins == other.tlsPins;
 }
 
 class CustomProxy {
@@ -193,6 +197,31 @@ class TimeoutSettings {
           connectTimeout == other.connectTimeout &&
           keepAliveTimeout == other.keepAliveTimeout &&
           keepAlivePing == other.keepAlivePing;
+}
+
+class TlsPin {
+  final List<String> domains;
+  final String spkiS256;
+  final BigInt? expiration;
+
+  const TlsPin({
+    required this.domains,
+    required this.spkiS256,
+    this.expiration,
+  });
+
+  @override
+  int get hashCode =>
+      domains.hashCode ^ spkiS256.hashCode ^ expiration.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TlsPin &&
+          runtimeType == other.runtimeType &&
+          domains == other.domains &&
+          spkiS256 == other.spkiS256 &&
+          expiration == other.expiration;
 }
 
 class TlsSettings {

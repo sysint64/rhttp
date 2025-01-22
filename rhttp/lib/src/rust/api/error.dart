@@ -26,6 +26,12 @@ sealed class RhttpError with _$RhttpError implements FrbException {
   const factory RhttpError.rhttpInvalidCertificateError(
     String field0,
   ) = RhttpError_RhttpInvalidCertificateError;
+  const factory RhttpError.rhttpInvalidPeerCertificateError() =
+      RhttpError_RhttpInvalidPeerCertificateError;
+  const factory RhttpError.rhttpNoTlsInfoFoundError() =
+      RhttpError_RhttpNoTlsInfoFoundError;
+  const factory RhttpError.rhttpParsingPeerCertificateError() =
+      RhttpError_RhttpParsingPeerCertificateError;
   const factory RhttpError.rhttpConnectionError(
     String field0,
   ) = RhttpError_RhttpConnectionError;

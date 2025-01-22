@@ -1,7 +1,7 @@
 // According to reqwest documentation,
 // the port "0" will use the "conventional port for the given scheme"
 // e.g. 80 for HTTP, 443 for HTTPS.
-const FALLBACK_PORT: &'static str = "0";
+const FALLBACK_PORT: &str = "0";
 
 pub(crate) trait SocketAddrDigester {
     /// Adds the `FALLBACK_PORT` to the end of the string if it doesn't have a port.
