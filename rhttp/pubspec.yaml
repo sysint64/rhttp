@@ -10,6 +10,7 @@ topics:
   - http3
 funding:
   - https://github.com/sponsors/Tienisto/
+publish_to: https://git.j-novel.club/api/packages/kintsugi/pub/
 
 environment:
   sdk: ^3.4.0
