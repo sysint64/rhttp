@@ -1,6 +1,6 @@
 name: rhttp
 description: Make HTTP requests using Rust for Flutter developers. It uses FFI to call Rust functions from Dart. On the Rust side, it uses reqwest to make HTTP requests.
-version: 0.9.8
+version: 0.9.8-kintsugi
 repository: https://github.com/Tienisto/rhttp
 topics:
   - http
@@ -10,6 +10,7 @@ topics:
   - http3
 funding:
   - https://github.com/sponsors/Tienisto/
+publish_to: https://git.j-novel.club/api/packages/kintsugi/pub/
 
 environment:
   sdk: ^3.4.0
